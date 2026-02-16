@@ -1,0 +1,125 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+
+package "Model" {
+    abstract class Tile {
+        - int id
+        - String imagePath
+        + getId(): int
+        + getImagePath(): String
+    }
+
+    class LandslideTile extends Tile {
+    }
+
+    abstract class FindingTile extends Tile {
+    }
+
+    class MosaicTile extends FindingTile {
+        - String color
+        + getColor(): String
+    }
+
+    class AmphoraTile extends FindingTile {
+        - String color
+        + getColor(): String
+    }
+
+    class SkeletonTile extends FindingTile {
+        - boolean isBig
+        - boolean isUpper
+    }
+
+    abstract class StatueTile extends FindingTile {
+    }
+
+    class SphinxTile extends StatueTile {
+    }
+    class CaryatidTile extends StatueTile {
+    }
+
+    abstract class Character {
+        - boolean isUsed
+        + ability()
+        + isUsed(): boolean
+    }
+    
+    class Assistant extends Character {}
+    class Archaeologist extends Character {}
+    class Digger extends Character {}
+    class Professor extends Character {}
+    class TheCoder extends Character {}
+
+    class Player {
+        - String name
+        - int score
+        - ArrayList<Tile> myTiles
+        - ArrayList<Character> myCharacters
+        - boolean hasPlayed
+        - boolean hasPickedFromBoard
+        + calculateScore(): int
+        + useCharacter(Character)
+        + addTiles(ArrayList<Tile>)
+    }
+
+    class Board {
+        - ArrayList<Tile> mosaicArea
+        - ArrayList<Tile> statueArea
+        - ArrayList<Tile> amphoraArea
+        - ArrayList<Tile> skeletonArea
+        - ArrayList<Tile> landslideArea
+        + addTileToArea(Tile)
+        + removeTileFromArea(Tile)
+        + isEntranceFull(): boolean
+    }
+
+    class Bag {
+        - ArrayList<Tile> tiles
+        + drawTile(): Tile
+        + initTiles()
+    }
+}
+
+package "View" {
+    class GameWindow {
+        + updatePlayerInfo(String, String, int)
+        + addTileToBoard(Tile)
+        + removeTileFromBoard(Tile, int)
+        + resetBoardVisuals()
+        + addTileToHand(String)
+    }
+}
+
+package "Controller" {
+    class Controller {
+        - Board board
+        - Bag bag
+        - ArrayList<Player> players
+        - GameWindow view
+        - Player thief
+        - boolean isSoloMode
+        - int currentPlayerIndex
+        --
+        + Controller()
+        + startTurn()
+        + endTurn(boolean)
+        + drawTilesForCurrentPlayer()
+        + selectFromArea(int)
+        + handleThiefTurn()
+        + handleGameOver()
+        + useCharacter(int)
+    }
+}
+
+' Relationships
+Controller --> Board : manages
+Controller --> Bag : uses
+Controller --> Player : manages
+Controller --> GameWindow : updates
+Player "1" *-- "*" Tile : owns
+Player "1" *-- "5" Character : has
+Board "1" *-- "*" Tile : contains
+Bag "1" *-- "*" Tile : contains
+
+@enduml
